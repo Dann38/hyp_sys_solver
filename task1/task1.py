@@ -19,5 +19,5 @@ if __name__ == '__main__':
     for node in nodes:
         solver.solver(node)
 
-    s, x, y = mesh.get_XY_t1()
+    s, x, y = mesh.get_XY_finish()
     drawer.plot_final(s, lambda si: x_an(si, mesh.parameters.t1), lambda si: y_an(si, mesh.parameters.t1), x, y)

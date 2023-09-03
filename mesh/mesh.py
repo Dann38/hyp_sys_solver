@@ -60,13 +60,16 @@ class Mesh:
                 list_nodes.append(node)
         return list_nodes
 
-    def get_XY_t1(self):
+    def get_XY_finish(self, revers_time=False):
         finish = self.finish.get_array_node()
 
         def approx(t_u, t_d, f_u, f_d):
             if t_d == t_u:
                 return f_u
-            return (f_d-f_u)*(self.parameters.t1-t_u)/(t_d-t_u) + f_u
+            elif revers_time:
+                return (f_d - f_u) * (self.parameters.t0 - t_u) / (t_d - t_u) + f_u
+            else:
+                return (f_d-f_u)*(self.parameters.t1-t_u)/(t_d-t_u) + f_u
 
         x_t1 = [approx(u.t, d.t, u.x, d.x) for u, d in zip(finish[0], finish[1])]
         y_t1 = [approx(u.t, d.t, u.y, d.y) for u, d in zip(finish[0], finish[1])]

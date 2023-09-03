@@ -60,17 +60,18 @@ class Solver:
         node.x, node.y = np.linalg.solve(A, b)
         node.is_resolved = True
 
-    def solver_border1(self, node: Node):
+    def solver_border2(self, node: Node):
         (sl, tl, xl, yl, hl), (sr, tr, xr, yr, hr) = node.get_old_point()
 
         A = [[1 + hr / 2 * self.A1(node.s, node.t), + hr / 2 * self.A2(node.s, node.t)],
-             [1 - hl / 2, hl / 2 * self.C2 / self.C1]]
+             [ hl / 2 * self.C2 / self.C1, 1 - hl / 2]]
+
         b = [xr - hr / 2 * (self.A1(sr, tr) * xr + self.A2(sr, tr) * yr - self.Fx(sr, tr) - self.Fx(node.s, node.t)),
              xl + hl / 2 * (xl - self.C2 / self.C1 * yl + self.phi_y(node.t)+self.phi_y(tl))]
         node.x, node.y = np.linalg.solve(A, b)
         node.is_resolved = True
 
-    def solver_border2(self, node: Node):
+    def solver_border1(self, node: Node):
         (sl, tl, xl, yl, hl), (sr, tr, xr, yr, hr) = node.get_old_point()
 
         A = [[1 - hr / 2, hr / 2 * self.C1 / self.C2],
