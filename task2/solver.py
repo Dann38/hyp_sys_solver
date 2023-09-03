@@ -52,8 +52,8 @@ class Solver:
     def solver_center(self, node: Node):  # Сделано
         (sl, tl, xl, yl, hl), (sr, tr, xr, yr, hr) = node.get_old_point()
 
-        A = [[1 + hr / 2 * self.A1(node.s, node.t), + hr / 2 * self.A2(node.s, node.t)],
-             [+ hl / 2 * self.B1(node.s, node.t), 1 + hl / 2 * self.B2(node.s, node.t)]]
+        A = [[1 + hr / 2 * self.A1(node.s, node.t), hr / 2 * self.A2(node.s, node.t)],
+             [hl / 2 * self.B1(node.s, node.t), 1 + hl / 2 * self.B2(node.s, node.t)]]
         b = [xr - hr / 2 * (self.A1(sr, tr) * xr + self.A2(sr, tr) * yr - self.Fx(sr, tr) - self.Fx(node.s, node.t)),
              yl - hl / 2 * (self.B1(sl, tl) * xl + self.B2(sl, tl) * yl - self.Fy(sl, tl) - self.Fy(node.s, node.t))]
 
