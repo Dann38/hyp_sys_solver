@@ -1,34 +1,11 @@
 from typing import List
-from node import *
-
-
-class Parameters:
-    def __init__(self, c1, c2, s0, s1, t0, t1, count_node):
-        self.c1 = c1
-        self.c2 = c2
-        self.c = [self.c1, self.c2]
-        self.t0 = t0
-        self.t1 = t1
-        self.t = [self.t0, self.t1]
-        self.s0 = s0
-        self.s1 = s1
-        self.s = [self.s0, self.s1]
-        self.m = count_node
-        self.ds, self.h_down, self.h_up = self.create_mesh_s()
-        self.h = [self.h_down,  self.h_up]
-        self.dt = self.h[0]+self.h[1]
-        self.inds = None
-
-    def create_mesh_s(self):
-        ds = (self.s1 - self.s0) / self.m
-        h_down = ds / self.c2
-        h_up = ds / self.c1
-        return ds, h_down, h_up
+from mesh.node import *
+from mesh.parameters import Parameters
 
 
 class Mesh:
-    def __init__(self, c1, c2, s0, s1, t0, t1, count_node):
-        self.parameters = Parameters(c1, c2, s0, s1, t0, t1, count_node)
+    def __init__(self, parameters: Parameters):
+        self.parameters = parameters
         self.start = MeshStart(self.parameters)
         self.left = MeshLeft(self.parameters)
         self.right = MeshRight(self.parameters)
@@ -102,6 +79,7 @@ class PartMesh(ABC):
     def __init__(self, parameter):
         self.parameters = parameter
         self.nodes = None
+        self.revers = False
 
     @abstractmethod
     def create(self, *args):
@@ -116,18 +94,26 @@ class PartMesh(ABC):
         pass
 
     def revers_time(self):
-        for node in self.get_array_node():
-            node.t = self.parameters.t1-node.t
-            node.s = self.parameters.s1-node.s
+        self.revers = True
+        for level in self.get_array_node():
+            for node in level:
+                node.t = self.parameters.t1-node.t
+                node.s = self.parameters.s1-node.s
 
-    def sort_by_solved(self, list_node):  # сначала те, которые можно решить
+    def sort_by_solved(self, list_node):  # сначала те, которые можно решить TODO для обратной
         first = [list_node[0]]
         second = []
         for i, node in enumerate(list_node[1:]):
-            if node.t > list_node[i].t:
-                second.append(node)
+            if not self.revers:
+                if node.t > list_node[i].t:
+                    second.append(node)
+                else:
+                    first.append(node)
             else:
-                first.append(node)
+                if node.t < list_node[i].t:
+                    second.append(node)
+                else:
+                    first.append(node)
         return first + second
 
 

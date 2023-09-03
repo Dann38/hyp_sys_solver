@@ -1,7 +1,7 @@
 from typing import List
 
 import matplotlib.pyplot as plt
-from node import Node
+from mesh.node import Node
 import numpy as np
 
 
