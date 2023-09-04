@@ -22,9 +22,9 @@ if __name__ == '__main__':
         y = y_an(node.s, node.t)
         print(node.get_type(), f"({node.s:3.2f},{node.t:3.2f})\tреш ({node.x:3.4f}, {node.y:3.4f})\t aн ({x:3.4f}, {y:3.4f})")
 
-    drawer.plot_mesh(nodes)
+    # drawer.plot_mesh(nodes)
     s, x, y = mesh.get_XY_finish(revers_time=True)
-    drawer.plot_final(s, lambda si: x_an(si, mesh.parameters.t1), lambda si: y_an(si, mesh.parameters.t1), x, y)
+    drawer.plot_final(s, lambda si: x_an(si, mesh.parameters.t0), lambda si: y_an(si, mesh.parameters.t0), x, y)
 
     drawer.plot_border(mesh.left.get_array_node()[0], mesh.right.get_array_node()[0],
                        lambda t: x_an(parameters.s1, t), lambda t: y_an(parameters.s1, t),

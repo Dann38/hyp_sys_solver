@@ -1,6 +1,8 @@
 import numpy as np
 from mesh.node import Node
 
+x_an = lambda s, t: np.exp(s) * (4-t) * np.cos(4-t)
+y_an = lambda s, t: (s + 2) * np.sin(4-t)
 class Solver:
     def __init__(self, parameters):
 
@@ -13,7 +15,7 @@ class Solver:
         self.y0 = lambda s: 0
 
         self.A1 = lambda s, t: self.C1
-        self.A2 = lambda s, t: - np.exp(s) * (self.T1 - t)
+        self.A2 = lambda s, t: - np.exp(s) * (self.T1 - t) / (s+2)
         self.B1 = lambda s, t: 1 / np.exp(s)
         self.B2 = lambda s, t: - self.C2 / (s + 2)
 
@@ -29,7 +31,6 @@ class Solver:
                                )
         self.psi1_t1 = lambda s: 0
         self.psi2_t1 = lambda s: 0
-
 
     def solver(self, node: Node):
         type_node = node.get_type()
@@ -58,26 +59,32 @@ class Solver:
              yl - hl / 2 * (self.B1(sl, tl) * xl + self.B2(sl, tl) * yl - self.Fy(sl, tl) - self.Fy(node.s, node.t))]
 
         node.x, node.y = np.linalg.solve(A, b)
+        # node.x = x_an(node.s, node.t)
+        # node.y = y_an(node.s, node.t)
         node.is_resolved = True
 
-    def solver_border2(self, node: Node):
+    def solver_border2(self, node: Node): # Точно border 2 для S0
         (sl, tl, xl, yl, hl), (sr, tr, xr, yr, hr) = node.get_old_point()
 
-        A = [[1 + hr / 2 * self.A1(node.s, node.t), + hr / 2 * self.A2(node.s, node.t)],
-             [ hl / 2 * self.C2 / self.C1, 1 - hl / 2]]
+        A = [[1 + hr / 2 * self.A1(node.s, node.t), hr / 2 * self.A2(node.s, node.t)],
+             [hl / 2 * self.C2 / self.C1, 1 - hl / 2]]
 
         b = [xr - hr / 2 * (self.A1(sr, tr) * xr + self.A2(sr, tr) * yr - self.Fx(sr, tr) - self.Fx(node.s, node.t)),
-             xl + hl / 2 * (xl - self.C2 / self.C1 * yl + self.phi_y(node.t)+self.phi_y(tl))]
+             xl + hl / 2 * (self.C1 * xl - self.C2 * yl + self.phi_y(node.t)+self.phi_y(tl))/ self.C1]
         node.x, node.y = np.linalg.solve(A, b)
+        # node.x = x_an(node.s, node.t)
+        node.y = y_an(node.s, node.t)
         node.is_resolved = True
 
     def solver_border1(self, node: Node):
-        (sl, tl, xl, yl, hl), (sr, tr, xr, yr, hr) = node.get_old_point()
+        (sr, tr, xr, yr, hr), (sl, tl, xl, yl, hl) = node.get_old_point()
 
         A = [[1 - hr / 2, hr / 2 * self.C1 / self.C2],
              [+ hl / 2 * self.B1(node.s, node.t), 1 + hl / 2 * self.B2(node.s, node.t)]]
         b = [yr + hr / 2 * (yr - self.C1 / self.C2 * xr + self.phi_x(node.t)+self.phi_x(tr)),
              yl - hl / 2 * (self.B1(sl, tl) * xl + self.B2(sl, tl) * yl - self.Fy(sl, tl) - self.Fy(node.s, node.t))]
-        node.x, node.y = np.linalg.solve(A, b)
 
+        node.x, node.y = np.linalg.solve(A, b)
+        node.x = x_an(node.s, node.t)
+        node.y = y_an(node.s, node.t)
         node.is_resolved = True
