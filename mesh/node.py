@@ -31,10 +31,10 @@ class Node(ABC):
 
     def get_old_point(self):
         sl, tl, xl, yl = self.left.get_inf()
-        hl = self.t - tl
+        hl = abs(self.t - tl)
 
         sr, tr, xr, yr = self.right.get_inf()
-        hr = self.t - tr
+        hr = abs(self.t - tr)
         return (sl, tl, xl, yl, hl), (sr, tr, xr, yr, hr)
 
 class NodeStart(Node):

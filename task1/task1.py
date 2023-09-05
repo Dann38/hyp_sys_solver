@@ -9,7 +9,7 @@ x_an = lambda s, t: np.exp(s) * np.cos(t)
 y_an = lambda s, t: (s + 2) * np.sin(t)
 
 if __name__ == '__main__':
-    parameters = Parameters(c1=1, c2=3, s0=0, s1=2, t0=0, t1=40, count_node=48)
+    parameters = Parameters(c1=1, c2=3, s0=0, s1=2, t0=0, t1=4, count_node=60)
     mesh = Mesh(parameters)
     solver = Solver(parameters)
     drawer = Drawer()
